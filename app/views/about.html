@@ -1,0 +1,45 @@
+
+<h1>Annotated Figures v0.1</h1>
+<h2>How to create nice annotated figures for your LaTeX papers?</h2>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-6">
+
+<ui-codemirror ui-codemirror-opts="editorOptions">
+    \begin{annotatedFigure}
+      {\includegraphics[width=1.0\linewidth]{teaser.png}}
+      \annotatedFigureBox{0.01,0.7}{0.32,0.89}{A}{0.01,0.7}
+      \annotatedFigureBox{0.32,0.19}{0.4,0.3}{B}{0.32,0.19}
+      \annotatedFigureBox{0.49,0.8}{0.53,0.89}{C}{0.49,0.8}
+      \annotatedFigureBox{0.5,0.18}{0.7,0.3}{D}{0.5,0.18}
+      \annotatedFigureBox{0.21,0.6}{0.32,0.89}{E}{0.32,0.6}
+    \end{annotatedFigure}
+
+    \caption{\textbf{Lorum Ipsum Overview} -- Lorem ipsum dolor sit amet (A), consetetur sadipscing (B) elitr, sed diam (C) nonumy eirmod tempor invidunt ut labore (D) et dolore magna (E).}
+    \label{fig:teaser}
+
+  \end{figure}
+
+
+</ui-codemirror>
+    </div>
+
+    <div class="col-md-4">
+      <img width="600" src="images/annotated-figure.png">
+
+    </div>
+  </div>
+
+<div class="row">
+  <div class="col-md-2">
+    <br/><br/>
+    <p>
+      <button class="btn btn-success">Start Visual Overlay Generator...</button></p>
+    </div>
+     </div>
+</div>
+
+
+  </div>
+

@@ -1,0 +1,30 @@
+
+<div class="row">
+
+  <div class="col-md-1">
+    <p ng-repeat="item in items">
+      <button  editable-text="item.label" onaftersave="refreshLatexCode()">Box {{ item.label || "A" }}</button>
+    </p>
+</div>
+
+  <div id="dropZone" class="col-md-6">
+
+    <input type="file" class="btn btn-success" id="fileSelect">
+    <br/><br/>
+    <div><canvas height="500" width="1000" id="overlayCanvas"></canvas></div>
+
+  </div>
+  <!--<div class="col-md-1">
+
+      <p ng-repeat="item in items">
+         <button  editable-text="item.label" onaftersave="refreshLatexCode()">Box {{ item.label || "A" }}</button>
+      </p>
+</div>-->
+    <div class="col-md-4">
+
+    <button type="submit" ng-click="refreshLatexCode()" class="btn btn-default">Copy LaTeX Code</button>
+      <br/><br/>
+    <ui-codemirror ui-codemirror-opts="editorOptions" ng-change="loadLatexCode()" ng-model="latex.code"></ui-codemirror>
+
+  </div>
+</div>
