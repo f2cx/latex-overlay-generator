@@ -1,73 +1,77 @@
 'use strict';
 
-/**
- * @ngdoc function
- * @name latexOverlayApp.controller:MainCtrl
- * @description
- * # MainCtrl
- * Controller of the latexOverlayApp
- */
 angular.module('latexOverlayApp')
-  .controller('MainCtrl', function ($scope, $rootScope) {
+  .controller('RadiolistCtrl', function ($scope, $filter) {
+
+    $scope.statuses = [
+      {value: 'tl', text: 'top-left'},
+      {value: 'bl', text: 'bottom-left'},
+      {value: 'tr', text: 'top-right'},
+      {value: 'br', text: 'bottom-right'},
+      {value: 'na', text: 'custom'}
+    ];
+
+    $scope.showStatus = function() {
+      var selected = $filter('filter')($scope.statuses, {value: $scope.item.position});
+      return ($scope.item.position && selected.length) ? selected[0].text : 'Not set';
+    };
+  })
+  .controller('MainCtrl', function ($scope, $rootScope, ngDialog) {
+
+    $scope.latex.code = $rootScope.latex.code;
+
+    // canvas for the display
+    var canvas = new fabric.Canvas('overlayCanvas', {selection: true});
 
 
-    $scope.loadLatexCode = function () {
-      var str = $rootScope.latex.code;
+    // create latex code and load overlays
+    $scope.createLatexCode = function () {
 
-
-      var myRe = /\\annotatedFigureBox{(.*),(.*)}{(.*),(.*)}{(.*)}{(.*),(.*)}/g;
-
-      var tag;
-      $rootScope.items =[];
-      while ((tag = myRe.exec(str)) !== null) {
-        var msg = 'Found ' + tag[1] + '. ';
-        console.log(msg);
-        var item = {macro: "annotatedFigureBox", label: tag[5], x0: tag[1], y0:  tag[2], x1:  tag[3], y1: tag[4], x2:  tag[6], y2: tag[7]}
-
-        $rootScope.items.push(item);
-      }
-
-      $scope.loadOverlays();
-
-    }
-
-    $scope.refreshLatexCode = function () {
-
-
-
+      // create the latex code
       var rtn = '\\begin{annotatedFigure}\n';
       rtn = rtn + '\t{\\includegraphics[width=1.0\\linewidth]{' + $rootScope.overlay.file + '}}\n';
 
-      for (var i = 0; i < $rootScope.items.length; i++) {
+      for (var i = 0; i < $rootScope.overlay.items.length; i++) {
 
-        var item = $rootScope.items[i];
+        var item = $rootScope.overlay.items[i];
 
-        rtn = rtn + '\t\\' + item.macro + '{' + item.x0 + ',' + item.y0 + '}{' + item.x1 + ',' + item.y1 + '}{' + item.label + '}{' +  item.x2 + ',' + item.y2 + '}\n';
+        rtn = rtn + '\t\\' + item.macro + '{' + item.x0 + ',' + item.y0 + '}{' + item.x1 + ',' + item.y1 + '}{' + item.label + '}{' + item.x2 + ',' + item.y2 + '}\n';
 
       }
 
       rtn = rtn + '\\end{annotatedFigure}\n';
 
-
       $rootScope.latex.code = rtn;
 
+    };
 
-      $scope.loadOverlays();
+    $scope.changeLabelPosition = function (item) {
+
+
+      if (item.position === 'bl') {
+        item.x2 = item.x0;
+        item.y2 = item.y0;
+      }
+
+
+      if (item.position === 'tl') {
+        item.x2 = item.x0;
+        item.y2 = item.y1;
+
+      }
+
+      if (item.position === 'tr') {
+        item.x2 = item.x1;
+        item.y2 = item.y1;
+      }
+
+      if (item.position === 'br') {
+        item.x2 = item.x1;
+        item.y2 = item.y0;
+      }
+
     }
 
-
-    var canvas = new fabric.Canvas('overlayCanvas', {selection: true});
-
-    function x2dec(x){
-      var rtn = 1.0 / $scope.overlay.width * x;
-      return Number((rtn).toFixed(4));
-    }
-
-    function y2dec(y) {
-
-     var rtn = 1.0 - 1.0 / $scope.overlay.height * y;
-     return Number((rtn).toFixed(4));
-    }
 
     canvas.on({
       'object:modified': function (e) {
@@ -83,7 +87,11 @@ angular.module('latexOverlayApp')
         activeObject.dataItem.x1 = x2dec(activeObject.oCoords.tr.x);
         activeObject.dataItem.y1 = y2dec(activeObject.oCoords.tr.y);
 
-        $scope.$apply();
+        $rootScope.$apply(function () {
+          $scope.changeLabelPosition(activeObject.dataItem);
+          $scope.createLatexCode();
+          $scope.redrawOverlays(); // ro reposition label
+        });
 
 
         //activeObject.set('strokeWidth', obj.strokeWidth);
@@ -91,7 +99,95 @@ angular.module('latexOverlayApp')
 
     });
 
-    var addRect = function (item, p1, width, height) {
+    $scope.clickToOpen = function (item) {
+
+      $scope.item = item;
+      ngDialog.open({
+        template: 'dialogs/overlay.html',
+        showClose: true,
+        scope: $scope
+      });
+    };
+
+    // refresh display
+    $scope.redrawOverlays = function () {
+
+      // clear the canvas
+      canvas.clear().renderAll();
+
+      // add the overlays
+      for (var i = 0; i < $rootScope.overlay.items.length; i++) {
+
+        // get the current item
+        var item = $rootScope.overlay.items[i];
+
+        addOverlay(item);
+
+      }
+
+
+    }
+
+    // parse latex code (e.g. after change)
+    $scope.parseLatexCode = function () {
+
+      var str = $scope.latex.code;
+
+      var myRe = /\\annotatedFigureBox{(.*),(.*)}{(.*),(.*)}{(.*)}{(.*),(.*)}/g;
+
+      var tag;
+      $rootScope.overlay.items = [];
+      while ((tag = myRe.exec(str)) !== null) {
+
+        var item = {
+          macro: "annotatedFigureBox",
+          label: tag[5],
+          x0: tag[1],
+          y0: tag[2],
+          x1: tag[3],
+          y1: tag[4],
+          x2: tag[6],
+          y2: tag[7]
+        }
+
+        $rootScope.overlay.items.push(item);
+      }
+
+
+    }
+
+    // helper methods
+
+    function x2dec(x) {
+      var rtn = 1.0 / $scope.overlay.width * x;
+      return Number((rtn).toFixed(4));
+    }
+
+    function y2dec(y) {
+
+      var rtn = 1.0 - 1.0 / $scope.overlay.height * y;
+      return Number((rtn).toFixed(4));
+    }
+
+    function dec2x(x) {
+      var rtn = x * $scope.overlay.width;
+      return rtn;
+    }
+
+    function dec2y(y) {
+
+      var rtn = $scope.overlay.height - y * $scope.overlay.height;
+      ;
+      return rtn;
+    }
+
+    function addOverlay(item) {
+
+      var rectPosition = new fabric.Point(dec2x(item.x0), dec2y(item.y0));
+
+      var width = (item.x1 - item.x0) * $rootScope.overlay.width;
+      var height = (item.y1 - item.y0) * $rootScope.overlay.height;
+
       var rect = new fabric.Rect({
         hasBorders: false,
         fill: 'blue',
@@ -104,10 +200,10 @@ angular.module('latexOverlayApp')
         strokeWidth: 0,
         angle: 0
       });
-      rect.setPositionByOrigin(p1, 'left', 'bottom');
+
+      rect.setPositionByOrigin(rectPosition, 'left', 'bottom');
 
       canvas.add(rect);
-
 
       var circle = new fabric.Circle({
         radius: 10,
@@ -122,126 +218,137 @@ angular.module('latexOverlayApp')
         originY: 'center'
       });
 
-      var group = new fabric.Group([ circle, text ], {
+      var group = new fabric.Group([circle, text], {
         left: 0,
         top: 0,
         selectable: false
       });
 
       var labelPosition = new fabric.Point(dec2x(item.x2), dec2y(item.y2));
+
+
       group.setPositionByOrigin(labelPosition, 'center', 'center');
 
       canvas.add(group);
-
 
       canvas.renderAll();
 
     }
 
-
-    function dec2x(x){
-      var rtn = x * $scope.overlay.width;
-      return rtn;
-    }
-
-    function dec2y(y) {
-
-      var rtn = $scope.overlay.height - y * $scope.overlay.height;;
-      return rtn;
-    }
-
-    $scope.loadOverlays = function () {
-      canvas.clear().renderAll();
-      for (var i = 0; i < $scope.items.length; i++) {
-
-        // get the current item
-        var item = $scope.items[i];
-
-        var x = dec2x(item.x0);
-        var y = dec2y(item.y0)
-
-        var p1n = new fabric.Point(x, y);
-
-        var w = (item.x1 - item.x0) * $scope.overlay.width;
-        var h = (item.y1 - item.y0) * $scope.overlay.height;
-
-
-        addRect(item, p1n, w, h);
-      }
+    function loadImage(src, callback) {
+      var img = new Image();
+      img.onload = callback;
+      img.src = src;
     }
 
     function loadBackground(src) {
-      var img = new Image();
-      img.src = src;
 
-      if (img.width > img.height) {
-        $scope.overlay.orientation = "landscape";
-        $scope.overlay.width = canvas.width;
-        $scope.overlay.height = canvas.width * (img.height / img.width);
+      loadImage(src, function (e) {
 
-      } else {
-        $scope.overlay.orientation = "portrait";
-        $scope.overlay.width = canvas.height * (img.width / img.height);
-        $scope.overlay.height = canvas.height;
+        var img = this;
 
-      }
+        console.log("Local image loaded locally: " + this.width + "x" + this.height);
 
-      canvas.setBackgroundImage(src, canvas.renderAll.bind(canvas), {
-        left: 0,
-        top: 0,
-        originX: 'left',
-        originY: 'top',
-        width: $scope.overlay.width,
-        height: $scope.overlay.height
+
+        if (img.width > img.height) {
+          $scope.overlay.orientation = "landscape";
+          $scope.overlay.width = canvas.width;
+          $scope.overlay.height = canvas.width * (img.height / img.width);
+
+        } else {
+          $scope.overlay.orientation = "portrait";
+          $scope.overlay.width = canvas.height * (img.width / img.height);
+          $scope.overlay.height = canvas.height;
+
+        }
+
+        canvas.setBackgroundImage(src, canvas.renderAll.bind(canvas), {
+          left: 0,
+          top: 0,
+          originX: 'left',
+          originY: 'top',
+          width: $scope.overlay.width,
+          height: $scope.overlay.height
+        });
+
+        $scope.redrawOverlays();
+
+      })
+
+
+    };
+
+    function convertPDFToData(pdf, callback) {
+      PDFJS.getDocument(pdf).then(function(pdf) {
+        pdf.getPage(1).then(function(page) {
+          var scale = 1;
+          var viewport = page.getViewport(scale);
+
+          var offscreenCanvas = document.getElementById('offscreenCanvas');
+          offscreenCanvas.height = viewport.height;
+          offscreenCanvas.width = viewport.width;
+
+          var context = offscreenCanvas.getContext('2d');
+
+          var renderContext = {
+            canvasContext: context,
+            viewport: viewport
+          };
+          var pageRendering = page.render(renderContext).then(function() {
+            callback(offscreenCanvas.toDataURL());
+          })
+
+
+        });
+
       });
-
     }
-
-    loadBackground("images/teaser.png");
-    $scope.refreshLatexCode();
-
-    function handleImage(evt) {
-      evt.stopPropagation();
-      evt.preventDefault();
-
-      var files = evt.dataTransfer.files;
-
-      var reader = new FileReader();
-
-      reader.onload = function (event) {
-        loadBackground(event.target.result);
-      }
-      reader.readAsDataURL(files[0]);
-
-    }
-
-
-    function handleImageSelect(evt) {
-
-      var files = this.files;
-
-      var reader = new FileReader();
-
-      reader.onload = function (event) {
-        loadBackground(event.target.result);
-      }
-      reader.readAsDataURL(files[0]);
-
-    }
-
-
-    function handleDragOver(evt) {
-      evt.stopPropagation();
-      evt.preventDefault();
-      evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
-    }
-
-    // Setup the dnd listeners.
-    var dropZone = document.getElementById('dropZone');
-    dropZone.addEventListener('dragover', handleDragOver, false);
-    dropZone.addEventListener('drop', handleImage, false);
-
     var fileSelect = document.getElementById('fileSelect');
-    fileSelect.addEventListener('change', handleImageSelect, false)
+
+    fileSelect.addEventListener('change', function (e) {
+
+      var file = fileSelect.files[0];
+
+      var reader = new FileReader();
+
+      reader.onload = function (e) {
+        $rootScope.overlay.file = file.name;
+        console.log(file.name);
+
+        var extension = file.name.split('.').pop().toLowerCase();
+
+        if (extension == 'pdf') {
+          console.log("Convert pdf file...");
+          convertPDFToData(reader.result, function(data) {
+
+            loadBackground(data);
+
+            $rootScope.$apply(function () {
+              $scope.createLatexCode();
+              $scope.redrawOverlays(); // ro reposition label
+            });
+
+          });
+
+        } else {
+
+          loadBackground(reader.result);
+
+          $rootScope.$apply(function () {
+            $scope.createLatexCode();
+            $scope.redrawOverlays(); // ro reposition label
+          });
+        }
+      }
+
+      reader.readAsDataURL(file);
+
+    })
+
+
+    $scope.createLatexCode();
+    loadBackground("images/teaser.png");
+
+
 
   });

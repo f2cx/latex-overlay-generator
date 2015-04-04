@@ -1,0 +1,10 @@
+<h1>Overlay: {{item.label}}</h1>
+
+Label: <a editable-text="item.label" onaftersave="createLatexCode(); redrawOverlays();">Box {{ item.label || "A" }}</a>
+Position: <a editable-text="item.x0" onaftersave="createLatexCode(); redrawOverlays();">Box {{ item.label || "A" }}</a>
+
+<div ng-controller="RadiolistCtrl">
+  <a href="#" onaftersave="changeLabelPosition(item); createLatexCode(); redrawOverlays();" editable-radiolist="item.position" e-ng-options="s.value as s.text for s in statuses">
+    {{ showStatus() }}
+  </a>
+</div>

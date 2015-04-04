@@ -1,30 +1,29 @@
 
 <div class="row">
 
-  <div class="col-md-1">
-    <p ng-repeat="item in items">
-      <button  editable-text="item.label" onaftersave="refreshLatexCode()">Box {{ item.label || "A" }}</button>
-    </p>
+  <input type="file" class="btn btn-success" id="fileSelect"> (Possible file formats: PDF, PNG, JPG,...) (Privacy: The files are NEVER sent to our server, they are processed locally!)
+
 </div>
 
-  <div id="dropZone" class="col-md-6">
+<div class="row">
+    <canvas height="500" width="1000" id="overlayCanvas"></canvas>
 
-    <input type="file" class="btn btn-success" id="fileSelect">
-    <br/><br/>
-    <div><canvas height="500" width="1000" id="overlayCanvas"></canvas></div>
-
-  </div>
-  <!--<div class="col-md-1">
-
-      <p ng-repeat="item in items">
-         <button  editable-text="item.label" onaftersave="refreshLatexCode()">Box {{ item.label || "A" }}</button>
-      </p>
-</div>-->
-    <div class="col-md-4">
-
-    <button type="submit" ng-click="refreshLatexCode()" class="btn btn-default">Copy LaTeX Code</button>
-      <br/><br/>
-    <ui-codemirror ui-codemirror-opts="editorOptions" ng-change="loadLatexCode()" ng-model="latex.code"></ui-codemirror>
-
-  </div>
 </div>
+
+<div class="row">
+
+
+  <button ng-repeat="item in overlay.items"  ng-click="clickToOpen(item)" class="btn btn-default">{{item.label}}</button>
+
+
+
+</div>
+
+<div class="row">
+
+  <ui-codemirror id="latex" ui-codemirror-opts="editorOptions" ng-model="latex.code"
+                 ng-change="parseLatexCode(); redrawOverlays();"></ui-codemirror>
+
+</div>
+
+<canvas ng-hide="1==1" id="offscreenCanvas"></canvas>
