@@ -3,6 +3,7 @@
 angular.module('latexOverlayApp')
   .controller('RadiolistCtrl', function ($scope, $filter) {
 
+
     $scope.statuses = [
       {value: 'tl', text: 'top-left'},
       {value: 'bl', text: 'bottom-left'},
@@ -18,6 +19,13 @@ angular.module('latexOverlayApp')
   })
   .controller('MainCtrl', function ($scope, $rootScope, ngDialog, $http) {
 
+    $scope.editorOptions = {
+      lineWrapping : true,
+      lineNumbers: true,
+      mode: 'stex',
+      theme: 'default'
+    };
+
     $scope.latex.code = $rootScope.latex.code;
     $scope.selectedItem = {};
 
@@ -26,7 +34,7 @@ angular.module('latexOverlayApp')
 
     $scope.getFullLatex = function() {
 
-      $http.get('/latex/v0.0.1.tex').success(function(data) {
+      $http.get('v0.0.1.txt').success(function(data) {
 
         var code = getLatexCode();
         var rtn = data.replace("%ANNOTATED_FIGURE%", code);
@@ -411,7 +419,7 @@ angular.module('latexOverlayApp')
 
 
     $scope.createLatexCode();
-    loadBackground('images/black-demo.png');
+    loadBackground('black-demo.png');
 
 
   });

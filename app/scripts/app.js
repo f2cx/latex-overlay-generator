@@ -52,10 +52,5 @@ angular
     ];
 
 
-    $rootScope.editorOptions = {
-      lineWrapping : true,
-      lineNumbers: true,
-      mode: 'stex',
-      theme: 'default'
-    };
+
   });
