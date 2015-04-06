@@ -4,8 +4,8 @@
   <h4>Visual Overlay Generator v0.0.1</h4>
 
 
-  <img width="100%" src="images/annotated-figure.png">
-
+  <div class="row"><img width="80%" src="images/v0.0.1.png"></div>
+  <br/>
   <a href="#/v0.0.1" class="btn btn-success">Test it now!</a>
   <br/><br/>
 
@@ -15,16 +15,17 @@
 
 
   <ui-codemirror ui-codemirror-opts="editorOptions">
-\begin{annotatedFigure}
-  {\includegraphics[width=1.0\linewidth]{teaser.png}}
-    \annotatedFigureBox{0.01,0.7}{0.32,0.89}{A}{0.01,0.7}
-    \annotatedFigureBox{0.32,0.19}{0.4,0.3}{B}{0.32,0.19}
-    \annotatedFigureBox{0.49,0.8}{0.53,0.89}{C}{0.49,0.8}
-    \annotatedFigureBox{0.5,0.18}{0.7,0.3}{D}{0.5,0.18}
-    \annotatedFigureBox{0.21,0.6}{0.32,0.89}{E}{0.32,0.6}
+\begin{figure}[h!t]
+
+  \begin{annotatedFigure}
+    {\includegraphics[width=1.0\linewidth]{black-demo.png}}
+    \annotatedFigureBox{0.084,0.614}{0.394,0.804}{A}{0.084,0.614}%bl
+    \annotatedFigureBox{0.222,0.284}{0.3743,0.4934}{B}{0.3743,0.4934}%tr
+    \annotatedFigureBox{0.555,0.784}{0.6815,0.874}{C}{0.555,0.784}%bl
+    \annotatedFigureBox{0.557,0.322}{0.8985,0.5269}{D}{0.8985,0.5269}%tr
   \end{annotatedFigure}
 
-  \caption{\textbf{Lorum Ipsum Overview} -- Lorem ipsum dolor sit amet (A), consetetur sadipscing (B) elitr, sed diam (C) nonumy eirmod tempor invidunt ut labore (D) et dolore magna (E).}
+  \caption{\textbf{Lorum Ipsum Overview} -- Lorem ipsum dolor amet (A), consetetur (B) elitr, sed diam (C) nonumy eirmod invidunt ut labore (D).}
   \label{fig:teaser}
 
 \end{figure}

@@ -16,7 +16,7 @@ angular.module('latexOverlayApp')
       return ($scope.selectedItem.position && selected.length) ? selected[0].text : 'Not set';
     };
   })
-  .controller('MainCtrl', function ($scope, $rootScope, ngDialog) {
+  .controller('MainCtrl', function ($scope, $rootScope, ngDialog, $http) {
 
     $scope.latex.code = $rootScope.latex.code;
     $scope.selectedItem = {};
@@ -24,9 +24,19 @@ angular.module('latexOverlayApp')
     // canvas for the display
     var canvas = new fabric.Canvas('overlayCanvas', {selection: true});
 
+    $scope.getFullLatex = function() {
+
+      $http.get('/latex/v0.0.1.tex').success(function(data) {
+
+        var code = getLatexCode();
+        var rtn = data.replace("%ANNOTATED_FIGURE%", code);
+        $scope.latex.code = rtn;
+      });
+
+    }
 
     // create latex code and load overlays
-    $scope.createLatexCode = function () {
+    function getLatexCode() {
 
       // create the latex code
       var rtn = '\\begin{annotatedFigure}\n';
@@ -41,6 +51,16 @@ angular.module('latexOverlayApp')
       }
 
       rtn = rtn + '\\end{annotatedFigure}\n';
+
+      return rtn;
+
+    };
+
+
+    // create latex code and load overlays
+    $scope.createLatexCode = function () {
+
+      var rtn = getLatexCode();
 
       $rootScope.latex.code = rtn;
 

@@ -21,7 +21,9 @@
     <h4>Overlay: <a editable-text="selectedItem.label" onaftersave="createLatexCode(); redrawOverlays();">{{
       selectedItem.label || "n/a" }}</a><br/><br/></h4>
 
-    <strong>Label Position: </strong><div ng-controller="RadiolistCtrl">
+    <strong>Label Position: </strong>
+
+    <div ng-controller="RadiolistCtrl">
       <a href="#" onaftersave="changeLabelPosition(selectedItem); createLatexCode(); redrawOverlays();"
          editable-radiolist="selectedItem.position" e-ng-options="s.value as s.text for s in statuses">
         {{ showStatus() }}
@@ -43,16 +45,18 @@
 
 <div class="container">
 
-  <div class="text-center"><small>Hint: Copy/remove a line to modify number of overlay boxes.</small></div>
+
   <ui-codemirror id="latex" ui-codemirror-opts="editorOptions" ng-model="latex.code"
                  ng-change="parseLatexCode(); changeAllLabelPosition(); redrawOverlays();"></ui-codemirror>
-
-
-  <div class="checkbox text-center">
-    <label>
-      <input type="checkbox"> Show full LaTeX source with packages.
-    </label>
+  <div class="text-center">
+    <small>Hint: Copy/remove a line to modify number of overlay boxes.</small>
   </div>
+
+<br/>
+  <center>
+    <button ng-click="getFullLatex()" class="btn btn-success">Show full LaTeX source code</a>
+  </center>
+
   <br/><br/>
 
 </div>
