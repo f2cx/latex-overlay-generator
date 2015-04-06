@@ -11,14 +11,15 @@ angular.module('latexOverlayApp')
       {value: 'na', text: 'custom'}
     ];
 
-    $scope.showStatus = function() {
-      var selected = $filter('filter')($scope.statuses, {value: $scope.item.position});
-      return ($scope.item.position && selected.length) ? selected[0].text : 'Not set';
+    $scope.showStatus = function () {
+      var selected = $filter('filter')($scope.statuses, {value: $scope.selectedItem.position});
+      return ($scope.selectedItem.position && selected.length) ? selected[0].text : 'Not set';
     };
   })
   .controller('MainCtrl', function ($scope, $rootScope, ngDialog) {
 
     $scope.latex.code = $rootScope.latex.code;
+    $scope.selectedItem = {};
 
     // canvas for the display
     var canvas = new fabric.Canvas('overlayCanvas', {selection: true});
@@ -35,7 +36,7 @@ angular.module('latexOverlayApp')
 
         var item = $rootScope.overlay.items[i];
 
-        rtn = rtn + '\t\\' + item.macro + '{' + item.x0 + ',' + item.y0 + '}{' + item.x1 + ',' + item.y1 + '}{' + item.label + '}{' + item.x2 + ',' + item.y2 + '}\n';
+        rtn = rtn + '\t\\' + item.macro + '{' + item.x0 + ',' + item.y0 + '}{' + item.x1 + ',' + item.y1 + '}{' + item.label + '}{' + item.x2 + ',' + item.y2 + '}%' + item.position + '\n';
 
       }
 
@@ -44,6 +45,37 @@ angular.module('latexOverlayApp')
       $rootScope.latex.code = rtn;
 
     };
+
+    $scope.changeAllLabelPosition = function () {
+
+      for (var i = 0; i < $rootScope.overlay.items.length; i++) {
+
+        var item = $rootScope.overlay.items[i];
+
+        if (item.position === 'bl') {
+          item.x2 = item.x0;
+          item.y2 = item.y0;
+        }
+
+
+        if (item.position === 'tl') {
+          item.x2 = item.x0;
+          item.y2 = item.y1;
+
+        }
+
+        if (item.position === 'tr') {
+          item.x2 = item.x1;
+          item.y2 = item.y1;
+        }
+
+        if (item.position === 'br') {
+          item.x2 = item.x1;
+          item.y2 = item.y0;
+        }
+
+      }
+    }
 
     $scope.changeLabelPosition = function (item) {
 
@@ -97,7 +129,16 @@ angular.module('latexOverlayApp')
         //activeObject.set('strokeWidth', obj.strokeWidth);
       }
 
+      , 'object:selected': function (e) {
+        var activeObject = canvas.getActiveObject();
+        console.log(activeObject.dataItem);
+        $scope.selectedItem = activeObject.dataItem;
+        $rootScope.$apply();
+      }
     });
+
+    // disable group selection
+    canvas.selection = false;
 
     $scope.clickToOpen = function (item) {
 
@@ -133,7 +174,7 @@ angular.module('latexOverlayApp')
 
       var str = $scope.latex.code;
 
-      var myRe = /\\annotatedFigureBox{(.*),(.*)}{(.*),(.*)}{(.*)}{(.*),(.*)}/g;
+      var myRe = /\\annotatedFigureBox{(.*),(.*)}{(.*),(.*)}{(.*)}{(.*),(.*)}%(.*)/g;
 
       var tag;
       $rootScope.overlay.items = [];
@@ -147,7 +188,8 @@ angular.module('latexOverlayApp')
           x1: tag[3],
           y1: tag[4],
           x2: tag[6],
-          y2: tag[7]
+          y2: tag[7],
+          position: tag[8]
         }
 
         $rootScope.overlay.items.push(item);
@@ -279,8 +321,8 @@ angular.module('latexOverlayApp')
     };
 
     function convertPDFToData(pdf, callback) {
-      PDFJS.getDocument(pdf).then(function(pdf) {
-        pdf.getPage(1).then(function(page) {
+      PDFJS.getDocument(pdf).then(function (pdf) {
+        pdf.getPage(1).then(function (page) {
           var scale = 1;
           var viewport = page.getViewport(scale);
 
@@ -294,7 +336,7 @@ angular.module('latexOverlayApp')
             canvasContext: context,
             viewport: viewport
           };
-          var pageRendering = page.render(renderContext).then(function() {
+          var pageRendering = page.render(renderContext).then(function () {
             callback(offscreenCanvas.toDataURL());
           })
 
@@ -303,7 +345,9 @@ angular.module('latexOverlayApp')
 
       });
     }
+
     var fileSelect = document.getElementById('fileSelect');
+    $('[data-toggle="tooltip"]').tooltip();
 
     fileSelect.addEventListener('change', function (e) {
 
@@ -319,7 +363,7 @@ angular.module('latexOverlayApp')
 
         if (extension == 'pdf') {
           console.log("Convert pdf file...");
-          convertPDFToData(reader.result, function(data) {
+          convertPDFToData(reader.result, function (data) {
 
             loadBackground(data);
 
@@ -347,8 +391,7 @@ angular.module('latexOverlayApp')
 
 
     $scope.createLatexCode();
-    loadBackground("images/teaser.png");
-
+    loadBackground('images/black-demo.png');
 
 
   });
