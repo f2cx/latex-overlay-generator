@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="65626a43-b363-4ace-9868-c883753e5d37" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/scripts/scripts.fb1945e8.js" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dist/index.html" afterPath="$PROJECT_DIR$/dist/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dist/views/v0.0.1.html" afterPath="$PROJECT_DIR$/dist/views/v0.0.1.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dist/v0.0.1.txt" afterPath="$PROJECT_DIR$/dist/v0.0.1.txt" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/dist/scripts/scripts.4b255133.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="LatexOverlay.iws" />
@@ -379,7 +376,13 @@
       <option name="project" value="LOCAL" />
       <updated>1428440756537</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="New version">
+      <created>1428440855851</created>
+      <option name="number" value="00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1428440855851</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -428,7 +431,8 @@
     <MESSAGE value="Add dist folder to repository" />
     <MESSAGE value="Fix for copy raw pdfworker in grunt copy" />
     <MESSAGE value="Add textual overlay" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add textual overlay" />
+    <MESSAGE value="New version" />
+    <option name="LAST_COMMIT_MESSAGE" value="New version" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
