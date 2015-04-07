@@ -200,10 +200,13 @@ module.exports = function (grunt) {
     },
 
     // Renames files for browser caching purposes
+    // with workaround for pdfjs (http://stackoverflow.com/questions/26561566/secondary-bower-build-blocks-in-index-html)
     filerev: {
       dist: {
         src: [
           '<%= yeoman.dist %>/scripts/{,*/}*.js',
+          '!<%= yeoman.dist %>/bower_components/pdfjs-dist/build/pdf.js',
+          '!<%= yeoman.dist %>/bower_components/pdfjs-dist/build/pdf.worker.js',
           '<%= yeoman.dist %>/styles/{,*/}*.css',
           '<%= yeoman.dist %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}',
           '<%= yeoman.dist %>/styles/fonts/*'
@@ -362,7 +365,11 @@ module.exports = function (grunt) {
         cwd: '<%= yeoman.app %>/styles',
         dest: '.tmp/styles/',
         src: '{,*/}*.css'
-      }
+      },
+      pdfWorker: {
+        src: 'bower_components/pdfjs-dist/build/pdf.worker.js',
+        dest: '<%= yeoman.dist %>/scripts/pdf.worker.js'
+      },
     },
 
     // Run some tasks in parallel to speed up the build process
@@ -419,6 +426,20 @@ module.exports = function (grunt) {
     'karma'
   ]);
 
+
+  grunt.registerTask('fabian', [
+    'clean:dist',
+    'wiredep',
+    'useminPrepare',
+    'concurrent:dist',
+    'autoprefixer',
+    'concat',
+    'ngAnnotate',
+    'copy:dist',
+    'filerev',
+    'copy:pdfWorker'
+  ]);
+
   grunt.registerTask('build', [
     'clean:dist',
     'wiredep',
@@ -428,12 +449,13 @@ module.exports = function (grunt) {
     'concat',
     'ngAnnotate',
     'copy:dist',
-    'cdnify',
+    //'cdnify
     'cssmin',
     'uglify',
     'filerev',
     'usemin',
-    'htmlmin'
+    'htmlmin',
+    'copy:pdfWorker'
   ]);
 
   grunt.registerTask('default', [
