@@ -21,6 +21,14 @@
     <h4>Overlay: <a editable-text="selectedItem.label" onaftersave="createLatexCode(); redrawOverlays();">{{
       selectedItem.label || "n/a" }}</a><br/><br/></h4>
 
+    <strong>Overlay Type: </strong>
+
+    <div ng-controller="SelectLocalCtrl">
+      <a href="#" onaftersave="createLatexCode(); redrawOverlays();" editable-select="selectedItem.type" e-ng-options="s.value as s.text for s in statuses">
+        {{ showStatus() }}
+      </a>
+    </div>
+
     <strong>Label Position: </strong>
 
     <div ng-controller="RadiolistCtrl">
@@ -29,6 +37,12 @@
         {{ showStatus() }}
       </a>
     </div>
+    <div ng-show="selectedItem.type === 'annotatedFigureText'">
+    <strong>Content: </strong><br/>
+    <a editable-text="selectedItem.label" onaftersave="createLatexCode(); redrawOverlays();">{{
+      selectedItem.label || "n/a" }}</a>
+    </div>
+
   </div>
 
   <br/>
