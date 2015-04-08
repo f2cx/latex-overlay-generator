@@ -23,10 +23,10 @@
 
 \begin{figure}[h!t]
 
-  %ANNOTATED_FIGURE%
+%ANNOTATED_FIGURE%
 
-  \caption{\textbf{Lorum Ipsum Overview} -- Lorem ipsum dolor amet (A), consetetur (B) elitr, sed diam (C) nonumy eirmod invidunt ut labore (D).}
-  \label{fig:teaser}
+\caption{\textbf{Lorum Ipsum Overview} -- Lorem ipsum dolor amet (A), consetetur (B) elitr, sed diam (C) nonumy eirmod invidunt ut labore (D).}
+\label{fig:teaser}
 
 \end{figure}
 
