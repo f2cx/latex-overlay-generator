@@ -1,24 +1,33 @@
 {
-  "name": "latex-overlay",
-  "version": "0.0.0",
-  "dependencies": {
-    "angular": "^1.3.0",
-    "bootstrap": "^3.2.0",
-    "angular-animate": "^1.3.0",
-    "angular-cookies": "^1.3.0",
-    "angular-resource": "^1.3.0",
-    "angular-route": "^1.3.0",
-    "angular-sanitize": "^1.3.0",
-    "angular-touch": "^1.3.0",
-    "fabric": "~1.4.13",
-    "angular-xeditable": "~0.1.9",
-    "angular-ui-codemirror": "~0.2.3",
-    "ngDialog": "~0.3.12",
-    "pdfjs-dist": "~1.1.49"
-  },
-  "devDependencies": {
-    "angular-mocks": "^1.3.0"
-  },
-  "appPath": "app",
-  "moduleName": "latexOverlayApp"
+    "name": "latex-overlay-generator",
+    "version": "0.0.1",
+    "dependencies": {
+        "angular": "^1.3.0",
+        "bootstrap": "^3.2.0",
+        "angular-animate": "^1.3.0",
+        "angular-cookies": "^1.3.0",
+        "angular-resource": "^1.3.0",
+        "angular-route": "^1.3.0",
+        "angular-sanitize": "^1.3.0",
+        "angular-touch": "^1.3.0",
+        "fabric": "~1.4.13",
+        "angular-xeditable": "~0.1.9",
+        "angular-ui-codemirror": "~0.2.3",
+        "ngDialog": "~0.3.12",
+        "pdfjs-dist": "~1.1.49",
+        "grunt-cli": "~0.1.13"
+    },
+    "overrides": {
+        "bootstrap": {
+            "main": [
+                "dist/js/bootstrap.js",
+                "dist/css/bootstrap.css"
+            ]
+        }
+    },
+    "devDependencies": {
+        "angular-mocks": "^1.3.0"
+    },
+    "appPath": "app",
+    "moduleName": "latexOverlayApp"
 }

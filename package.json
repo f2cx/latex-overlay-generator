@@ -1,6 +1,6 @@
 {
-  "name": "latexoverlay",
-  "version": "0.0.0",
+  "name": "latex-overlay-generator",
+  "version": "0.0.1",
   "dependencies": {},
   "repository": {},
   "devDependencies": {
